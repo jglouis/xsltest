@@ -31,7 +31,7 @@ func main() {
 	matchByStudent := map[*Student]map[int]*Match{}
 	for n, s1 := range students {
 		for _, s2 := range students[n+1:] {
-			match := &Match{match(s1, s2), s1, s2}
+			match := NewMatch(s1, s2)
 			matches = append(matches, match)
 			for _, student := range []*Student{s1, s2} {
 				_, found := matchByStudent[student]
@@ -63,7 +63,11 @@ type Match struct {
 }
 
 func (m Match) String() string {
-	return fmt.Sprintf("match between %s and %s with a score of %d\n", m.Student1, m.Student2, m.Score)
+	return fmt.Sprintf("Match between %s and %s with a score of %d.\n", m.Student1, m.Student2, m.Score)
+}
+
+func NewMatch(s1, s2 *Student) *Match {
+	return &Match{match(s1, s2), s1, s2}
 }
 
 func match(s1, s2 *Student) int {
