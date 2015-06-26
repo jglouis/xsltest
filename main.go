@@ -32,12 +32,9 @@ func main() {
 	fmt.Println(students)
 
 	// matching
-	for _, s1 := range students {
-		for _, s2 := range students {
-			if s1 == s2 {
-				continue
-			}
-			fmt.Printf("%s and %s have a match of %.1f\n", s1.Name, s2.Name, match(s1, s2))
+	for n, s1 := range students {
+		for _, s2 := range students[n+1:] {
+			fmt.Printf("%s and %s have a match of %d\n", s1.Name, s2.Name, match(s1, s2))
 		}
 	}
 
@@ -54,20 +51,20 @@ func (s Student) String() string {
 	return s.Name
 }
 
-func match(s1, s2 *Student) float64 {
-	score := 0.0
+func match(s1, s2 *Student) int {
+	score := 0
 
 	// Check if there is a common language.
 	for language := range s1.SpokenLanguages {
 		_, contains := s2.SpokenLanguages[language]
 		if contains {
-			score += 0.5
+			score += 1
 		}
 	}
 
-	// Check if they share the same study
+	// Check if they share the same study.
 	if s1.Study == s2.Study {
-		score += 0.5
+		score += 1
 	}
 
 	return score
