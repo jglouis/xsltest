@@ -9,12 +9,9 @@ import (
 
 func main() {
 	excelFileName := os.Args[1]
-	xlFile, err := xlsx.OpenFile(excelFileName)
+	xlFile, _ := xlsx.OpenFile(excelFileName)
 
 	students := []*Student{}
-
-	if err != nil {
-	}
 	for _, sheet := range xlFile.Sheets {
 		for _, row := range sheet.Rows {
 			name := row.Cells[0].Value
@@ -29,15 +26,24 @@ func main() {
 		}
 	}
 
-	fmt.Println(students)
-
 	// matching
+	matches := []*Match{}
+	matchByStudent := map[*Student]map[int]*Match{}
 	for n, s1 := range students {
 		for _, s2 := range students[n+1:] {
-			fmt.Printf("%s and %s have a match of %d\n", s1.Name, s2.Name, match(s1, s2))
+			match := &Match{match(s1, s2), s1, s2}
+			matches = append(matches, match)
+			for _, student := range []*Student{s1, s2} {
+				_, found := matchByStudent[student]
+				if !found {
+					matchByStudent[student] = map[int]*Match{}
+				}
+				matchByStudent[student][match.Score] = match
+			}
 		}
 	}
-
+	fmt.Println(matches)
+	fmt.Println(matchByStudent)
 }
 
 type Student struct {
@@ -49,6 +55,15 @@ type Student struct {
 
 func (s Student) String() string {
 	return s.Name
+}
+
+type Match struct {
+	Score              int
+	Student1, Student2 *Student
+}
+
+func (m Match) String() string {
+	return fmt.Sprintf("match between %s and %s with a score of %d\n", m.Student1, m.Student2, m.Score)
 }
 
 func match(s1, s2 *Student) int {
